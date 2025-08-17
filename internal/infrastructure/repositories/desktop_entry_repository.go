@@ -324,9 +324,27 @@ func (r *DesktopEntryRepository) parseDesktopFile(filePath string) *entities.App
 			case "Icon":
 				app.IconPath = value
 			case "Categories":
-				app.Categories = strings.Split(value, ";")
+				// Split categories and filter out empty strings
+				categories := strings.Split(value, ";")
+				var filteredCategories []string
+				for _, cat := range categories {
+					cat = strings.TrimSpace(cat)
+					if cat != "" {
+						filteredCategories = append(filteredCategories, cat)
+					}
+				}
+				app.Categories = filteredCategories
 			case "Keywords":
-				app.Keywords = strings.Split(value, ";")
+				// Split keywords and filter out empty strings
+				keywords := strings.Split(value, ";")
+				var filteredKeywords []string
+				for _, kw := range keywords {
+					kw = strings.TrimSpace(kw)
+					if kw != "" {
+						filteredKeywords = append(filteredKeywords, kw)
+					}
+				}
+				app.Keywords = filteredKeywords
 			}
 		}
 	}

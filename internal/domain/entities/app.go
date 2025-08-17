@@ -1,6 +1,9 @@
 package entities
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // App represents an application that can be launched
 type App struct {
@@ -46,6 +49,11 @@ func (a *App) ToggleFavorite() {
 
 // AddCategory adds a category to the app
 func (a *App) AddCategory(category string) {
+	// Don't add empty categories
+	if strings.TrimSpace(category) == "" {
+		return
+	}
+
 	for _, cat := range a.Categories {
 		if cat == category {
 			return
@@ -56,6 +64,11 @@ func (a *App) AddCategory(category string) {
 
 // AddKeyword adds a keyword to the app
 func (a *App) AddKeyword(keyword string) {
+	// Don't add empty keywords
+	if strings.TrimSpace(keyword) == "" {
+		return
+	}
+
 	for _, kw := range a.Keywords {
 		if kw == keyword {
 			return

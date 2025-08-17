@@ -37,28 +37,11 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Search Bar -->
-      <div class="mb-8">
-        <div class="relative">
-          <SearchIcon class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            v-model="searchQuery"
-            @input="handleSearch"
-            @keydown.enter="handleEnter"
-            @keydown.escape="clearSearch"
-            type="text"
-            placeholder="Search for applications..."
-            class="search-input pl-12 pr-4"
-            ref="searchInput"
-          />
-          <button
-            v-if="searchQuery"
-            @click="clearSearch"
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            <XIcon class="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+      <SearchBar
+        @search="handleSearchResults"
+        @enter="handleSearchEnter"
+        ref="searchBarRef"
+      />
 
       <!-- Quick Actions -->
       <div v-if="!searchQuery" class="mb-8">
@@ -99,8 +82,19 @@
         </div>
       </div>
 
+      <!-- Search Loading -->
+      <div v-if="searchQuery && isSearching" class="text-center py-12">
+        <div class="w-12 h-12 text-primary-500 mx-auto mb-4 animate-spin">
+          <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Searching...</h3>
+        <p class="text-gray-500 dark:text-gray-400">Looking for applications matching "{{ searchQuery }}"</p>
+      </div>
+
       <!-- Search Results -->
-      <div v-if="searchQuery && searchResults.length > 0" class="mb-8">
+      <div v-else-if="searchQuery && searchResults.length > 0" class="mb-8">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Search Results ({{ searchResults.length }})
         </h2>
@@ -116,7 +110,7 @@
       </div>
 
       <!-- No Results -->
-      <div v-else-if="searchQuery && searchResults.length === 0" class="text-center py-12">
+      <div v-else-if="searchQuery && searchResults.length === 0 && !isSearching" class="text-center py-12">
         <SearchIcon class="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No applications found</h3>
         <p class="text-gray-500 dark:text-gray-400">Try a different search term or browse all applications.</p>
@@ -180,8 +174,6 @@
 import { ref, onMounted, computed, nextTick } from 'vue'
 import { useDark, useToggle } from '@vueuse/core'
 import {
-  SearchIcon,
-  XIcon,
   StarIcon,
   ClockIcon,
   GridIcon,
@@ -192,12 +184,11 @@ import {
   RocketIcon
 } from 'lucide-vue-next'
 import AppCard from './components/AppCard.vue'
+import SearchBar from './components/SearchBar.vue'
 
 export default {
   name: 'App',
   components: {
-    SearchIcon,
-    XIcon,
     StarIcon,
     ClockIcon,
     GridIcon,
@@ -206,14 +197,14 @@ export default {
     MoonIcon,
     ArrowLeftIcon,
     RocketIcon,
-    AppCard
+    AppCard,
+    SearchBar
   },
   setup() {
     const isDark = useDark()
     const toggleDarkMode = useToggle(isDark)
     
-    const searchInput = ref(null)
-    const searchQuery = ref('')
+    const searchBarRef = ref(null)
     const searchResults = ref([])
     const allApps = ref([])
     const favorites = ref([])
@@ -226,8 +217,8 @@ export default {
     // Focus search input on mount
     onMounted(async () => {
       await nextTick()
-      if (searchInput.value) {
-        searchInput.value.focus()
+      if (searchBarRef.value) {
+        searchBarRef.value.focus()
       }
       await loadInitialData()
     })
@@ -250,32 +241,25 @@ export default {
       }
     }
 
-    const handleSearch = async () => {
-      if (!searchQuery.value.trim()) {
-        searchResults.value = []
-        return
-      }
-
-      try {
-        const results = await window.go.main.App.SearchApps(searchQuery.value)
-        searchResults.value = results
-      } catch (error) {
-        console.error('Search failed:', error)
-        searchResults.value = []
-      }
+    const handleSearchResults = (results) => {
+      searchResults.value = results
     }
 
-    const handleEnter = () => {
+    const handleSearchEnter = () => {
       if (searchResults.value.length > 0) {
         launchApp(searchResults.value[0].id)
       }
     }
 
-    const clearSearch = () => {
-      searchQuery.value = ''
-      searchResults.value = []
-      searchInput.value?.focus()
-    }
+    // Computed property to get search query from SearchBar component
+    const searchQuery = computed(() => {
+      return searchBarRef.value?.searchQuery || ''
+    })
+
+    // Computed property to get search state from SearchBar component
+    const isSearching = computed(() => {
+      return searchBarRef.value?.isSearching || false
+    })
 
     const launchApp = async (appId) => {
       try {
@@ -326,7 +310,7 @@ export default {
     }
 
     return {
-      searchInput,
+      searchBarRef,
       searchQuery,
       searchResults,
       allApps,
@@ -336,11 +320,11 @@ export default {
       selectedCategory,
       categoryApps,
       isRefreshing,
+      isSearching,
       isDark,
       toggleDarkMode,
-      handleSearch,
-      handleEnter,
-      clearSearch,
+      handleSearchResults,
+      handleSearchEnter,
       launchApp,
       toggleFavorite,
       refreshApps,

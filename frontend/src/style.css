@@ -23,7 +23,11 @@
   }
   
   .search-input {
-    @apply w-full px-4 py-3 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-400;
+    @apply w-full px-4 py-3 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-400 cursor-text transition-colors duration-200;
+  }
+  
+  .search-input:hover {
+    @apply border-gray-400 dark:border-gray-500;
   }
   
   .btn-primary {
