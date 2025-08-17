@@ -43,33 +43,12 @@
         ref="searchBarRef"
       />
 
-      <!-- Quick Actions -->
-      <div v-if="!searchQuery" class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Access</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Favorites -->
-          <div class="app-card">
-            <div class="flex items-center space-x-3">
-              <StarIcon class="w-6 h-6 text-yellow-500" />
-              <div>
-                <h3 class="font-medium text-gray-900 dark:text-white">Favorites</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ favorites.length }} apps</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Recently Used -->
-          <div class="app-card">
-            <div class="flex items-center space-x-3">
-              <ClockIcon class="w-6 h-6 text-blue-500" />
-              <div>
-                <h3 class="font-medium text-gray-900 dark:text-white">Recently Used</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ recentlyUsed.length }} apps</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Quick Access -->
+      <QuickAccess
+        :searchQuery="searchQuery"
+        :favorites="favorites"
+        :recentlyUsed="recentlyUsed"
+      />
 
       <!-- Search Loading -->
       <div v-if="searchQuery && isSearching" class="text-center py-12">
@@ -83,21 +62,13 @@
       </div>
 
       <!-- Search Results -->
-      <div v-else-if="searchQuery && searchResults.length > 0" class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Search Results ({{ searchResults.length }})
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          <AppCard
-            v-for="(app, index) in searchResults"
-            :key="app.id"
-            :app="app"
-            :isSelected="index === 0"
-            @launch="launchApp"
-            @toggle-favorite="toggleFavorite"
-          />
-        </div>
-      </div>
+      <SearchResults
+        v-if="searchQuery && searchResults.length > 0"
+        :searchQuery="searchQuery"
+        :searchResults="searchResults"
+        @launch="launchApp"
+        @toggle-favorite="toggleFavorite"
+      />
 
       <!-- No Results -->
       <div v-else-if="searchQuery && searchResults.length === 0 && !isSearching" class="text-center py-12">
@@ -107,78 +78,31 @@
       </div>
 
       <!-- Categories -->
-      <div v-if="!searchQuery" class="mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-          <!-- Categories Header -->
-          <button
-            @click="toggleCategories"
-            class="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-          >
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Categories</h2>
-            <ChevronDownIcon 
-              v-if="isCategoriesExpanded" 
-              class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200" 
-            />
-            <ChevronRightIcon 
-              v-else 
-              class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200" 
-            />
-          </button>
-          
-          <!-- Categories Content (Collapsible) -->
-          <div 
-            v-if="isCategoriesExpanded"
-            class="px-4 pb-4 border-t border-gray-100 dark:border-gray-700"
-          >
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-4">
-              <button
-                v-for="category in categories"
-                :key="category"
-                @click="selectCategory(category)"
-                class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600 transition-colors duration-200 text-left"
-              >
-                <h3 class="font-medium text-gray-900 dark:text-white text-sm">{{ category }}</h3>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Categories
+        :searchQuery="searchQuery"
+        :categories="categories"
+        :isCategoriesExpanded="isCategoriesExpanded"
+        @toggle-categories="toggleCategories"
+        @select-category="selectCategory"
+      />
 
       <!-- All Applications -->
-      <div v-if="!searchQuery && !selectedCategory">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">All Applications</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          <AppCard
-            v-for="app in allApps"
-            :key="app.id"
-            :app="app"
-            @launch="launchApp"
-            @toggle-favorite="toggleFavorite"
-          />
-        </div>
-      </div>
+      <AllApplications
+        :searchQuery="searchQuery"
+        :selectedCategory="selectedCategory"
+        :allApps="allApps"
+        @launch="launchApp"
+        @toggle-favorite="toggleFavorite"
+      />
 
       <!-- Category Apps -->
-      <div v-if="selectedCategory">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ selectedCategory }} ({{ categoryApps.length }})
-          </h2>
-          <button @click="clearCategory" class="btn-secondary">
-            <ArrowLeftIcon class="w-4 h-4 mr-2" />
-            Back to All
-          </button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          <AppCard
-            v-for="app in categoryApps"
-            :key="app.id"
-            :app="app"
-            @launch="launchApp"
-            @toggle-favorite="toggleFavorite"
-          />
-        </div>
-      </div>
+      <CategoryApps
+        :selectedCategory="selectedCategory"
+        :categoryApps="categoryApps"
+        @launch="launchApp"
+        @toggle-favorite="toggleFavorite"
+        @clear-category="clearCategory"
+      />
     </main>
   </div>
 </template>
@@ -187,35 +111,33 @@
 import { ref, onMounted, computed, nextTick } from 'vue'
 import { useDark, useToggle } from '@vueuse/core'
 import {
-  StarIcon,
-  ClockIcon,
-  GridIcon,
   RefreshCwIcon,
   SunIcon,
   MoonIcon,
-  ArrowLeftIcon,
-  RocketIcon,
-  ChevronDownIcon,
-  ChevronRightIcon
+  RocketIcon
 } from 'lucide-vue-next'
 import AppCard from './components/AppCard.vue'
 import SearchBar from './components/SearchBar.vue'
+import QuickAccess from './components/QuickAccess.vue'
+import SearchResults from './components/SearchResults.vue'
+import AllApplications from './components/AllApplications.vue'
+import CategoryApps from './components/CategoryApps.vue'
+import Categories from './components/Categories.vue'
 
 export default {
   name: 'App',
   components: {
-    StarIcon,
-    ClockIcon,
-    GridIcon,
     RefreshCwIcon,
     SunIcon,
     MoonIcon,
-    ArrowLeftIcon,
     RocketIcon,
-    ChevronDownIcon,
-    ChevronRightIcon,
     AppCard,
-    SearchBar
+    SearchBar,
+    QuickAccess,
+    SearchResults,
+    AllApplications,
+    CategoryApps,
+    Categories
   },
   setup() {
     const isDark = useDark()
