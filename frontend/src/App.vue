@@ -46,7 +46,7 @@
       <!-- Quick Actions -->
       <div v-if="!searchQuery" class="mb-8">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Access</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Favorites -->
           <div class="app-card">
             <div class="flex items-center space-x-3">
@@ -65,17 +65,6 @@
               <div>
                 <h3 class="font-medium text-gray-900 dark:text-white">Recently Used</h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ recentlyUsed.length }} apps</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- All Apps -->
-          <div class="app-card">
-            <div class="flex items-center space-x-3">
-              <GridIcon class="w-6 h-6 text-green-500" />
-              <div>
-                <h3 class="font-medium text-gray-900 dark:text-white">All Applications</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ allApps.length }} apps</p>
               </div>
             </div>
           </div>
@@ -98,11 +87,12 @@
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Search Results ({{ searchResults.length }})
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           <AppCard
-            v-for="app in searchResults"
+            v-for="(app, index) in searchResults"
             :key="app.id"
             :app="app"
+            :isSelected="index === 0"
             @launch="launchApp"
             @toggle-favorite="toggleFavorite"
           />
@@ -118,23 +108,46 @@
 
       <!-- Categories -->
       <div v-if="!searchQuery" class="mb-8">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Categories</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <!-- Categories Header -->
           <button
-            v-for="category in categories"
-            :key="category"
-            @click="selectCategory(category)"
-            class="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-colors duration-200 text-left"
+            @click="toggleCategories"
+            class="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
           >
-            <h3 class="font-medium text-gray-900 dark:text-white text-sm">{{ category }}</h3>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Categories</h2>
+            <ChevronDownIcon 
+              v-if="isCategoriesExpanded" 
+              class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200" 
+            />
+            <ChevronRightIcon 
+              v-else 
+              class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200" 
+            />
           </button>
+          
+          <!-- Categories Content (Collapsible) -->
+          <div 
+            v-if="isCategoriesExpanded"
+            class="px-4 pb-4 border-t border-gray-100 dark:border-gray-700"
+          >
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-4">
+              <button
+                v-for="category in categories"
+                :key="category"
+                @click="selectCategory(category)"
+                class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600 transition-colors duration-200 text-left"
+              >
+                <h3 class="font-medium text-gray-900 dark:text-white text-sm">{{ category }}</h3>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- All Applications -->
       <div v-if="!searchQuery && !selectedCategory">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">All Applications</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           <AppCard
             v-for="app in allApps"
             :key="app.id"
@@ -156,7 +169,7 @@
             Back to All
           </button>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           <AppCard
             v-for="app in categoryApps"
             :key="app.id"
@@ -181,7 +194,9 @@ import {
   SunIcon,
   MoonIcon,
   ArrowLeftIcon,
-  RocketIcon
+  RocketIcon,
+  ChevronDownIcon,
+  ChevronRightIcon
 } from 'lucide-vue-next'
 import AppCard from './components/AppCard.vue'
 import SearchBar from './components/SearchBar.vue'
@@ -197,6 +212,8 @@ export default {
     MoonIcon,
     ArrowLeftIcon,
     RocketIcon,
+    ChevronDownIcon,
+    ChevronRightIcon,
     AppCard,
     SearchBar
   },
@@ -213,6 +230,7 @@ export default {
     const selectedCategory = ref('')
     const categoryApps = ref([])
     const isRefreshing = ref(false)
+    const isCategoriesExpanded = ref(false)
 
     // Focus search input on mount
     onMounted(async () => {
@@ -263,11 +281,15 @@ export default {
 
     const launchApp = async (appId) => {
       try {
+        console.log('Attempting to launch app with ID:', appId)
         await window.go.main.App.LaunchApp(appId)
+        console.log('Successfully launched app:', appId)
         // Update recently used
         await loadInitialData()
       } catch (error) {
-        console.error('Failed to launch app:', error)
+        console.error('Failed to launch app:', appId, error)
+        // Show user-friendly error message
+        alert(`Failed to launch application: ${error.message || error}`)
       }
     }
 
@@ -309,6 +331,10 @@ export default {
       categoryApps.value = []
     }
 
+    const toggleCategories = () => {
+      isCategoriesExpanded.value = !isCategoriesExpanded.value
+    }
+
     return {
       searchBarRef,
       searchQuery,
@@ -329,7 +355,9 @@ export default {
       toggleFavorite,
       refreshApps,
       selectCategory,
-      clearCategory
+      clearCategory,
+      toggleCategories,
+      isCategoriesExpanded
     }
   }
 }

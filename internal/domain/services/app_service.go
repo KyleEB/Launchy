@@ -3,11 +3,11 @@ package services
 import (
 	"context"
 	"fmt"
+	"launchy/internal/domain/entities"
+	"launchy/internal/domain/repositories"
 	"os/exec"
 	"sort"
 	"strings"
-	"launchy/internal/domain/entities"
-	"launchy/internal/domain/repositories"
 )
 
 // AppService handles business logic for applications
@@ -26,12 +26,17 @@ func NewAppService(repo repositories.AppRepository) *AppService {
 func (s *AppService) LaunchApp(ctx context.Context, appID string) error {
 	app, err := s.repo.GetByID(ctx, appID)
 	if err != nil {
-		return fmt.Errorf("failed to get app: %w", err)
+		return fmt.Errorf("failed to get app with ID %s: %w", appID, err)
+	}
+
+	// Check if app has a valid executable path
+	if app.ExecPath == "" {
+		return fmt.Errorf("app '%s' has no executable path", app.DisplayName)
 	}
 
 	// Launch the application
 	if err := s.executeApp(app); err != nil {
-		return fmt.Errorf("failed to launch app: %w", err)
+		return fmt.Errorf("failed to launch app '%s' (%s): %w", app.DisplayName, app.ExecPath, err)
 	}
 
 	// Update usage statistics
@@ -100,8 +105,20 @@ func (s *AppService) GetAppsByCategory(ctx context.Context, category string) ([]
 
 // executeApp launches an application using exec.Command
 func (s *AppService) executeApp(app *entities.App) error {
+	// Check if the executable exists
+	if app.ExecPath == "" {
+		return fmt.Errorf("executable path is empty")
+	}
+
+	// Try to launch the application
 	cmd := exec.Command(app.ExecPath)
-	return cmd.Start()
+
+	// Start the command
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("failed to start executable '%s': %w", app.ExecPath, err)
+	}
+
+	return nil
 }
 
 // calculateRelevance calculates the relevance score for search ranking
