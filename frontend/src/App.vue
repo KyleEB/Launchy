@@ -48,6 +48,8 @@
         :searchQuery="searchQuery"
         :favorites="favorites"
         :recentlyUsed="recentlyUsed"
+        @launch="launchApp"
+        @toggle-favorite="toggleFavorite"
       />
 
       <!-- Search Loading -->
@@ -203,9 +205,7 @@ export default {
 
     const launchApp = async (appId) => {
       try {
-        console.log('Attempting to launch app with ID:', appId)
         await window.go.main.App.LaunchApp(appId)
-        console.log('Successfully launched app:', appId)
         // Update recently used
         await loadInitialData()
       } catch (error) {
