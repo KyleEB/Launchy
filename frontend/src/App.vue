@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+  <div class="h-screen w-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-hidden">
     <!-- Header -->
     <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,15 +14,6 @@
           
           <div class="flex items-center space-x-2">
             <button 
-              @click="refreshApps"
-              :disabled="isRefreshing"
-              class="btn-secondary flex items-center space-x-2"
-            >
-              <RefreshCwIcon class="w-4 h-4" :class="{ 'animate-spin': isRefreshing }" />
-              <span>Refresh</span>
-            </button>
-            
-            <button 
               @click="toggleDarkMode"
               class="btn-secondary p-2"
             >
@@ -35,7 +26,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full overflow-y-auto">
       <!-- Search Bar -->
       <SearchBar
         @search="handleSearchResults"
@@ -113,7 +104,6 @@
 import { ref, onMounted, computed, nextTick } from 'vue'
 import { useDark, useToggle } from '@vueuse/core'
 import {
-  RefreshCwIcon,
   SunIcon,
   MoonIcon,
   RocketIcon
@@ -129,7 +119,6 @@ import Categories from './components/Categories.vue'
 export default {
   name: 'App',
   components: {
-    RefreshCwIcon,
     SunIcon,
     MoonIcon,
     RocketIcon,
@@ -153,7 +142,6 @@ export default {
     const categories = ref([])
     const selectedCategory = ref('')
     const categoryApps = ref([])
-    const isRefreshing = ref(false)
     const isCategoriesExpanded = ref(false)
 
     // Focus search input on mount
@@ -225,17 +213,7 @@ export default {
       }
     }
 
-    const refreshApps = async () => {
-      isRefreshing.value = true
-      try {
-        await window.go.main.App.RefreshApps()
-        await loadInitialData()
-      } catch (error) {
-        console.error('Failed to refresh apps:', error)
-      } finally {
-        isRefreshing.value = false
-      }
-    }
+
 
     const selectCategory = async (category) => {
       selectedCategory.value = category
@@ -267,7 +245,6 @@ export default {
       categories,
       selectedCategory,
       categoryApps,
-      isRefreshing,
       isSearching,
       isDark,
       toggleDarkMode,
@@ -275,7 +252,6 @@ export default {
       handleSearchEnter,
       launchApp,
       toggleFavorite,
-      refreshApps,
       selectCategory,
       clearCategory,
       toggleCategories,

@@ -201,12 +201,12 @@ func main() {
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:             "Launchy",
-		Width:             800,
-		Height:            600,
-		MinWidth:          600,
-		MinHeight:         400,
-		MaxWidth:          1200,
-		MaxHeight:         800,
+		Width:             1000,
+		Height:            700,
+		MinWidth:          800,
+		MinHeight:         600,
+		MaxWidth:          0, // No maximum width
+		MaxHeight:         0, // No maximum height
 		DisableResize:     false,
 		Fullscreen:        false,
 		Frameless:         false,

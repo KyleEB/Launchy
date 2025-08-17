@@ -98,7 +98,6 @@ wails build -platform darwin/amd64
 2. **Launch**: Click on any application to launch it
 3. **Favorites**: Click the star icon to add/remove from favorites
 4. **Categories**: Browse applications by category
-5. **Refresh**: Use the refresh button to scan for new applications
 
 ## Keyboard Shortcuts
 
