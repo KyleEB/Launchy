@@ -27,31 +27,37 @@
   });
 </script>
 
-<main>
-  <header>
-    <Rocket />
-    <h1>Launchy</h1>
-    <p>Application Launcher for CachyOS</p>
+<main class="min-h-screen bg-[#0d1117] text-[#c9d1d9]">
+  <header class="bg-[#161b22] border-b border-[#30363d] px-4 py-3">
+    <div class="max-w-7xl mx-auto flex items-center space-x-3">
+      <Rocket class="w-6 h-6 text-[#58a6ff]" />
+      <div>
+        <h1 class="text-xl font-semibold text-[#f0f6fc]">Launchy</h1>
+        <p class="text-sm text-[#8b949e]">Application Launcher for CachyOS</p>
+      </div>
+    </div>
   </header>
 
-  <div>
+  <div class="max-w-7xl mx-auto px-4 py-6">
     {#if $error}
       <ErrorMessage error={$error} onRetry={() => appStore.loadApps()} />
     {:else}
-      <SearchBar on:search={handleSearch} />
+      <div class="mb-6">
+        <SearchBar on:search={handleSearch} />
+      </div>
 
     {#if $filteredApps.length === 0 && !$isLoading}
-      <div>
-        <svg fill="currentColor" viewBox="0 0 24 24">
+      <div class="text-center py-16">
+        <svg class="w-12 h-12 mx-auto text-[#484f58] mb-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
         </svg>
-        <p>No applications found</p>
+        <p class="text-lg font-medium text-[#f0f6fc] mb-2">No applications found</p>
         {#if appStore.getSearchQuery()}
-          <p>Try adjusting your search terms</p>
+          <p class="text-[#8b949e]">Try adjusting your search terms</p>
         {/if}
       </div>
     {:else if $filteredApps.length > 0}
-      <div style="gap: 20px;">
+      <div class="grid grid-cols-2 max-w-2xl mx-auto p-4" style="gap: 24px;">
         {#each $filteredApps as app, index (app.exec + '-' + index)}
           <AppCard 
             {app}
