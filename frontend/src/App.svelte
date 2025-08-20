@@ -1,14 +1,17 @@
 <script lang="ts">
-  import SearchBar from "./lib/SearchBar.svelte";
-  import AppCard from "./lib/AppCard.svelte";
-  import ErrorMessage from "./lib/ErrorMessage.svelte";
+  import SearchBar from "./components/SearchBar.svelte";
+  import AppGrid from "./components/AppGrid.svelte";
+  import ErrorMessage from "./components/ErrorMessage.svelte";
   import { Rocket } from "lucide-svelte";
   import { appStore, filteredApps, isLoading, error } from "./stores/appStore";
   import { onMount } from 'svelte';
 
+  let selectedIndex = 0;
+
   // Search functionality
   function handleSearch(event: CustomEvent<string>) {
     appStore.setSearchQuery(event.detail);
+    selectedIndex = 0; // Reset selection when search changes
   }
 
   // Handle launch event from AppCard component
@@ -16,9 +19,28 @@
     appStore.launchApp(event.detail);
   }
 
-  // Handle toggle favorite event from AppCard component
-  function handleToggleFavorite(event: CustomEvent<string>) {
-    appStore.toggleFavorite(event.detail);
+
+
+  // Handle keyboard navigation
+  function handleKeydown(event: KeyboardEvent) {
+    if ($filteredApps.length === 0) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, $filteredApps.length - 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, 0);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if ($filteredApps[selectedIndex]) {
+          appStore.launchApp($filteredApps[selectedIndex].exec);
+        }
+        break;
+    }
   }
 
   // Load apps when component mounts
@@ -27,15 +49,18 @@
   });
 </script>
 
-<main class="min-h-screen bg-[#0d1117] text-[#c9d1d9]">
-    <header class="bg-[#161b22] border-b border-[#30363d] px-6 py-4 shadow-sm">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <Rocket class="text-[#58a6ff] p-10 w-40 h-40" />
-        <h1 class="text-2xl font-bold">Launchy</h1>
+<main class="min-h-screen bg-[#0d1117] text-[#c9d1d9]" on:keydown={handleKeydown} tabindex="0">
+    <header class="bg-[#161b22] border-b border-[#30363d] px-4 py-2 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-center space-x-6">
+      <div class="flex items-center space-x-2">
+        <Rocket class="text-[#58a6ff] w-6 h-6" />
+        <h1 class="text-lg font-bold">Launchy</h1>
       </div>
-      <div class="flex-1 max-w-md ml-8">
+      <div class="w-100">
         <SearchBar on:search={handleSearch} />
+      </div>
+      <div class="flex items-center space-x-2 text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-md border border-gray-600">
+        <span>↑↓ Navigate</span>
       </div>
     </div>
   </header>
@@ -45,28 +70,12 @@
       <ErrorMessage error={$error} onRetry={() => appStore.loadApps()} />
     {:else}
 
-    {#if $filteredApps.length === 0 && !$isLoading}
-      <div class="text-center py-16">
-        <svg class="w-12 h-12 mx-auto text-[#484f58] mb-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-        <p class="text-lg font-medium text-[#f0f6fc] mb-2">No applications found</p>
-        {#if appStore.getSearchQuery()}
-          <p class="text-[#8b949e]">Try adjusting your search terms</p>
-        {/if}
-      </div>
-    {:else if $filteredApps.length > 0}
-      <div class="grid grid-cols-2 max-w-2xl mx-auto p-4" style="gap: 24px;">
-        {#each $filteredApps as app, index (app.exec + '-' + index)}
-          <AppCard 
-            {app}
-            on:launch={handleLaunch}
-            on:toggleFavorite={handleToggleFavorite}
-          />
-        {/each}
-      </div>
-    {:else}
-      <!-- Loading: intentionally render nothing -->
+    {#if !$isLoading}
+      <AppGrid 
+        apps={$filteredApps}
+        {selectedIndex}
+        on:launch={handleLaunch}
+      />
     {/if}
   {/if}
     </div>

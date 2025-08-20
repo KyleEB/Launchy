@@ -3,10 +3,10 @@
   import type { AppInfo } from '../types/app';
   
   export let app: AppInfo;
+  export let isSelected = false;
   
   const dispatch = createEventDispatcher<{
     launch: string;
-    toggleFavorite: string;
   }>();
   
   function handleLaunch() {
@@ -20,10 +20,7 @@
     }
   }
   
-  function handleToggleFavorite(event: Event) {
-    event.stopPropagation();
-    dispatch('toggleFavorite', app.name);
-  }
+
 </script>
 
 <div 
@@ -31,21 +28,11 @@
   on:keydown={handleKeydown} 
   role="button" 
   tabindex="0"
-  class="border transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-opacity-50"
+  class="border transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-opacity-50 {isSelected ? 'ring-2 ring-yellow-400 ring-opacity-75' : ''}"
   style="border-radius: 16px; padding: 12px; background-color: var(--color-card-background); border-color: var(--color-border);"
 >
-  <div class="flex items-start justify-between mb-1">
+    <div class="mb-1">
     <h3 class="text-sm font-medium truncate">{app.name}</h3>
-    <button
-      type="button"
-      on:click={handleToggleFavorite}
-      aria-label="{app.isFavorite ? 'Remove from favorites' : 'Add to favorites'}"
-      class="flex-shrink-0 ml-1 p-0.5 transition-colors duration-200"
-    >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: {app.isFavorite ? 'var(--color-accent-orange)' : 'var(--color-secondary-text)'};">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-      </svg>
-    </button>
   </div>
   
   {#if app.comment}
