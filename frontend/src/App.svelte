@@ -28,12 +28,14 @@
 </script>
 
 <main class="min-h-screen bg-[#0d1117] text-[#c9d1d9]">
-  <header class="bg-[#161b22] border-b border-[#30363d] px-4 py-3">
-    <div class="max-w-7xl mx-auto flex items-center space-x-3">
-      <Rocket class="w-6 h-6 text-[#58a6ff]" />
-      <div>
-        <h1 class="text-xl font-semibold text-[#f0f6fc]">Launchy</h1>
-        <p class="text-sm text-[#8b949e]">Application Launcher for CachyOS</p>
+    <header class="bg-[#161b22] border-b border-[#30363d] px-6 py-4 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <Rocket class="text-[#58a6ff] p-10 w-40 h-40" />
+        <h1 class="text-2xl font-bold">Launchy</h1>
+      </div>
+      <div class="flex-1 max-w-md ml-8">
+        <SearchBar on:search={handleSearch} />
       </div>
     </div>
   </header>
@@ -42,9 +44,6 @@
     {#if $error}
       <ErrorMessage error={$error} onRetry={() => appStore.loadApps()} />
     {:else}
-      <div class="mb-6">
-        <SearchBar on:search={handleSearch} />
-      </div>
 
     {#if $filteredApps.length === 0 && !$isLoading}
       <div class="text-center py-16">

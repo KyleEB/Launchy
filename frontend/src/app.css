@@ -1,3 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+:root {
+  --color-primary-text: #f0f6fc;
+  --color-secondary-text: #8b949e;
+  --color-muted-text: #7d8590;
+  --color-background: #0d1117;
+  --color-card-background: #161b22;
+  --color-border: #30363d;
+  --color-accent-blue: #58a6ff;
+  --color-accent-orange: #f78166;
+  --color-purple: #a855f7;
+}
+
+body {
+  color: var(--color-primary-text);
+  background-color: var(--color-background);
+}
