@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=launchy
+Exec=launchy
+Icon=launchy
+Categories=Development;
+Terminal=false
+Keywords=wails
+Version=1.0
+StartupNotify=false

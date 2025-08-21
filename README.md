@@ -1,146 +1,200 @@
-# Launchy - CachyOS App Launcher
+# 🚀 Launchy - Application Launcher for CachyOS
 
-A modern, fast, and beautiful application launcher for CachyOS built with Go and Wails.
+A modern, fast application launcher built with Wails3 and Svelte for CachyOS and other Linux distributions.
 
 ## Features
 
-- 🚀 **Lightning Fast**: Built with Go for optimal performance
-- 🎨 **Modern UI**: Beautiful, responsive interface with dark mode support
-- 🔍 **Smart Search**: Intelligent search with relevance ranking
-- ⭐ **Favorites**: Mark and quickly access your favorite applications
-- 📱 **Responsive Design**: Works perfectly on different screen sizes
-- 🏷️ **Categories**: Browse applications by category
-- 📊 **Usage Tracking**: Track and display recently used applications
-- 🔄 **Auto-refresh**: Automatically detects new applications
-- 🌙 **Dark Mode**: Toggle between light and dark themes
+- **🔍 Smart Search**: Search applications by name, description, or categories
+- **⭐ Favorites**: Mark your most-used applications as favorites for quick access
+- **🎨 Modern UI**: Beautiful, responsive interface with smooth animations
+- **⚡ Fast Performance**: Built with Wails3 for native performance
+- **🔧 Clean Architecture**: Follows Clean Code and Clean Architecture patterns
 
 ## Architecture
 
-Launchy follows clean architecture principles with clear separation of concerns:
+This project follows Clean Architecture principles with clear separation of concerns:
 
-```
-launchy/
-├── internal/
-│   ├── domain/           # Business logic and entities
-│   │   ├── entities/     # Core domain objects
-│   │   ├── repositories/ # Data access interfaces
-│   │   └── services/     # Business logic services
-│   └── infrastructure/   # External concerns
-│       └── repositories/ # Concrete implementations
-├── frontend/             # Vue.js frontend
-│   ├── src/
-│   │   ├── components/   # Vue components
-│   │   └── ...
-│   └── ...
-└── ...
-```
+### Backend (Go)
+- **AppService**: Main service layer handling business logic
+- **AppRepository**: Interface for data operations (implemented as FileAppRepository)
+- **AppLauncher**: Interface for launching applications (implemented as SystemAppLauncher)
+- **DesktopFileParser**: Interface for parsing .desktop files
 
-## Prerequisites
+### Frontend (Svelte)
+- **App.svelte**: Main application component
+- **SearchBar.svelte**: Search functionality with debouncing
+- **AppCard.svelte**: Individual application card component
+- **FavoritesSection.svelte**: Favorites display section
+
+## Getting Started
+
+### Prerequisites
 
 - Go 1.21 or later
-- Node.js 16 or later
-- Wails CLI (`go install github.com/wailsapp/wails/v2/cmd/wails@latest`)
+- Node.js 18 or later
+- Wails3 CLI
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd Launchy
+   ```
+
+2. Install Wails3 CLI:
+   ```bash
+   go install github.com/wailsapp/wails/v3/cmd/wails@latest
+   ```
+
+3. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+### Development
+
+To run the application in development mode:
+
+```bash
+wails3 dev
+```
+
+This will start the application with hot-reloading for both frontend and backend changes.
+
+### Building
+
+To build the application for production:
+
+```bash
+wails3 build
+```
+
+This creates a production-ready executable in the `build` directory.
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/your-username/launchy.git
-cd launchy
-```
+### Arch Linux
 
-2. Install frontend dependencies:
-```bash
-cd frontend
-npm install
-cd ..
-```
+Launchy can be installed on Arch Linux using the provided PKGBUILD:
 
-3. Build the application:
-```bash
-wails build
-```
+#### From Release (Recommended)
+1. **Download the PKGBUILD:**
+   ```bash
+   curl -O https://raw.githubusercontent.com/KyleEB/launchy/main/PKGBUILD
+   ```
 
-## Development
+2. **Build and install:**
+   ```bash
+   makepkg -si
+   ```
 
-### Running in Development Mode
+#### From Source
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/KyleEB/launchy.git
+   cd launchy
+   ```
 
-```bash
-wails dev
-```
+2. **Install dependencies:**
+   ```bash
+   sudo pacman -S go nodejs npm git
+   go install github.com/wailsapp/wails/v3/cmd/wails@latest
+   ```
 
-This will start the development server with hot reloading for both frontend and backend.
+3. **Build and install:**
+   ```bash
+   makepkg -si
+   ```
 
-### Building for Production
+4. **Run Launchy:**
+   ```bash
+   launchy
+   ```
 
-```bash
-wails build
-```
+   The application will also be available in your desktop environment's application menu.
 
-This creates a production build for your current platform.
+### Other Linux Distributions
 
-### Cross-platform Building
+For other distributions, build from source:
 
-```bash
-# Build for Linux
-wails build -platform linux/amd64
+1. **Install dependencies:**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt install golang-go nodejs npm
+   
+   # Fedora
+   sudo dnf install golang nodejs npm
+   
+   # Arch Linux (if not using PKGBUILD)
+   sudo pacman -S go nodejs npm
+   ```
 
-# Build for Windows
-wails build -platform windows/amd64
+2. **Install Wails3 CLI:**
+   ```bash
+   go install github.com/wailsapp/wails/v3/cmd/wails@latest
+   ```
 
-# Build for macOS
-wails build -platform darwin/amd64
-```
+3. **Build the application:**
+   ```bash
+   wails3 build
+   ```
+
+4. **Run the binary:**
+   ```bash
+   ./bin/Launchy
+   ```
 
 ## Usage
 
-1. **Search**: Type in the search bar to find applications
-2. **Launch**: Click on any application to launch it
-3. **Favorites**: Click the star icon to add/remove from favorites
-4. **Categories**: Browse applications by category
+1. **Search Applications**: Type in the search bar to find applications by name, description, or category
+2. **Launch Applications**: Click on any application card to launch it
+3. **Manage Favorites**: Click the star icon on any application to add/remove it from favorites
+4. **View Favorites**: Your favorite applications appear at the top of the application list
 
-## Keyboard Shortcuts
+## Configuration
 
-- `Ctrl/Cmd + K`: Focus search bar
-- `Enter`: Launch selected application
-- `Escape`: Clear search
-- `Ctrl/Cmd + /`: Toggle dark mode
+Favorites are automatically saved to `~/.config/launchy/favorites.json` and persist between sessions.
+
+## Development Guidelines
+
+### Go Best Practices
+- Follow Clean Architecture principles
+- Use interfaces for dependency inversion
+- Implement proper error handling with wrapped errors
+- Use meaningful variable and function names
+- Add comments for exported functions and types
+
+### Svelte Best Practices
+- Use TypeScript for type safety
+- Implement proper event handling with `createEventDispatcher`
+- Follow component composition patterns
+- Use CSS custom properties for theming
+- Implement accessibility features (ARIA labels, keyboard navigation)
+
+### Code Style
+- Use consistent formatting (gofmt for Go, Prettier for Svelte)
+- Follow naming conventions
+- Write self-documenting code
+- Keep functions small and focused
+- Use meaningful commit messages
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Development Guidelines
-
-- Follow clean architecture principles
-- Write tests for new features
-- Use meaningful commit messages
-- Follow Go and Vue.js best practices
-- Ensure responsive design works on all screen sizes
+2. Create a feature branch
+3. Make your changes following the development guidelines
+4. Test your changes thoroughly
+5. Submit a pull request
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
-
-### License Summary
-
-Launchy is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
-- Built with [Wails](https://wails.io/) - Go framework for building desktop apps
-- UI powered by [Vue.js](https://vuejs.org/) and [Tailwind CSS](https://tailwindcss.com/)
-- Icons from [Lucide](https://lucide.dev/)
-- Inspired by modern application launchers like Spotlight and Alfred
-
-## Support
-
-For support, please open an issue on GitHub or join our community discussions.
+- Built with [Wails3](https://wails.io/) for cross-platform desktop applications
+- Frontend powered by [Svelte](https://svelte.dev/) for reactive user interfaces
+- Designed for [CachyOS](https://cachyos.org/) and other Linux distributions
