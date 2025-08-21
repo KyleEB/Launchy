@@ -1,10 +1,10 @@
-# Maintainer: Your Name <your.email@example.com>
+# Maintainer: KyleEB
 pkgname=launchy
 pkgver=0.1.0
 pkgrel=1
 pkgdesc="Application Launcher for CachyOS - Wails3 + Svelte"
 arch=('x86_64' 'aarch64')
-url="https://github.com/KyleEB/launchy"
+url="https://github.com/KyleEB/Launchy/tree/wails3-svelte-template"
 license=('MIT')
 depends=('gtk3' 'webkit2gtk-4.1')
 makedepends=('go' 'nodejs' 'npm' 'git')
