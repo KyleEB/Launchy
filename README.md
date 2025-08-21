@@ -44,7 +44,7 @@ This project follows Clean Architecture principles with clear separation of conc
 
 2. Install Wails3 CLI:
    ```bash
-   go install github.com/wailsapp/wails/v3/cmd/wails@latest
+   go install github.com/wailsapp/wails/v3/cmd/wails3@latest
    ```
 
 3. Install frontend dependencies:
@@ -101,7 +101,7 @@ Launchy can be installed on Arch Linux using the provided PKGBUILD:
 2. **Install dependencies:**
    ```bash
    sudo pacman -S go nodejs npm git
-   go install github.com/wailsapp/wails/v3/cmd/wails@latest
+   go install github.com/wailsapp/wails/v3/cmd/wails3@latest
    ```
 
 3. **Build and install:**
@@ -134,7 +134,7 @@ For other distributions, build from source:
 
 2. **Install Wails3 CLI:**
    ```bash
-   go install github.com/wailsapp/wails/v3/cmd/wails@latest
+   go install github.com/wailsapp/wails/v3/cmd/wails3@latest
    ```
 
 3. **Build the application:**
