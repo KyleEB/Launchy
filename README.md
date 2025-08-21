@@ -5,7 +5,6 @@ A modern, fast application launcher built with Wails3 and Svelte for CachyOS and
 ## Features
 
 - **🔍 Smart Search**: Search applications by name, description, or categories
-- **⭐ Favorites**: Mark your most-used applications as favorites for quick access
 - **🎨 Modern UI**: Beautiful, responsive interface with smooth animations
 - **⚡ Fast Performance**: Built with Wails3 for native performance
 - **🔧 Clean Architecture**: Follows Clean Code and Clean Architecture patterns
@@ -24,7 +23,6 @@ This project follows Clean Architecture principles with clear separation of conc
 - **App.svelte**: Main application component
 - **SearchBar.svelte**: Search functionality with debouncing
 - **AppCard.svelte**: Individual application card component
-- **FavoritesSection.svelte**: Favorites display section
 
 ## Getting Started
 
@@ -34,7 +32,7 @@ This project follows Clean Architecture principles with clear separation of conc
 - Node.js 18 or later
 - Wails3 CLI
 
-### Installation
+### Local Setup
 
 1. Clone the repository:
    ```bash
@@ -91,72 +89,13 @@ Launchy can be installed on Arch Linux using the provided PKGBUILD:
    makepkg -si
    ```
 
-#### From Source
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/KyleEB/launchy.git
-   cd launchy
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   sudo pacman -S go nodejs npm git
-   go install github.com/wailsapp/wails/v3/cmd/wails3@latest
-   ```
-
-3. **Build and install:**
-   ```bash
-   makepkg -si
-   ```
-
-4. **Run Launchy:**
-   ```bash
-   launchy
-   ```
-
-   The application will also be available in your desktop environment's application menu.
-
 ### Other Linux Distributions
 
-For other distributions, build from source:
-
-1. **Install dependencies:**
-   ```bash
-   # Ubuntu/Debian
-   sudo apt install golang-go nodejs npm
-   
-   # Fedora
-   sudo dnf install golang nodejs npm
-   
-   # Arch Linux (if not using PKGBUILD)
-   sudo pacman -S go nodejs npm
-   ```
-
-2. **Install Wails3 CLI:**
-   ```bash
-   go install github.com/wailsapp/wails/v3/cmd/wails3@latest
-   ```
-
-3. **Build the application:**
-   ```bash
-   wails3 build
-   ```
-
-4. **Run the binary:**
-   ```bash
-   ./bin/Launchy
-   ```
 
 ## Usage
 
-1. **Search Applications**: Type in the search bar to find applications by name, description, or category
-2. **Launch Applications**: Click on any application card to launch it
-3. **Manage Favorites**: Click the star icon on any application to add/remove it from favorites
-4. **View Favorites**: Your favorite applications appear at the top of the application list
-
-## Configuration
-
-Favorites are automatically saved to `~/.config/launchy/favorites.json` and persist between sessions.
+1. **Search Applications**: Type in the search bar to find applications by name, description, or category. Use the up and down arrow keys to navigate.
+2. **Launch Applications**: Click on any application card to launch it or hit the Enter key
 
 ## Development Guidelines
 
@@ -169,10 +108,7 @@ Favorites are automatically saved to `~/.config/launchy/favorites.json` and pers
 
 ### Svelte Best Practices
 - Use TypeScript for type safety
-- Implement proper event handling with `createEventDispatcher`
 - Follow component composition patterns
-- Use CSS custom properties for theming
-- Implement accessibility features (ARIA labels, keyboard navigation)
 
 ### Code Style
 - Use consistent formatting (gofmt for Go, Prettier for Svelte)
