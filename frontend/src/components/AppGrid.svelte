@@ -29,7 +29,7 @@
         <AppCard 
           {app}
           isSelected={index === selectedIndex}
-          on:launch={handleLaunch}
+          onLaunch={handleLaunch}
         />
       {/each}
     </div>

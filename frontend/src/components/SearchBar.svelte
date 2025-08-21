@@ -58,8 +58,8 @@
     type="text"
     placeholder="Search applications, commands, or executables..."
     bind:value={searchQuery}
-    on:input={handleInput}
-    on:keydown={(e) => {
+    oninput={handleInput}
+    onkeydown={(e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
         onEnter();
@@ -77,7 +77,7 @@
   {#if searchQuery}
     <button
       type="button"
-      on:click={clearSearch}
+      onclick={clearSearch}
       aria-label="Clear search"
       class="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-gray-400 hover:bg-gray-700 transition-colors"
     >

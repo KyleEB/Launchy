@@ -22,8 +22,8 @@
 </script>
 
 <div 
-  on:click={handleLaunch} 
-  on:keydown={handleKeydown} 
+  onclick={handleLaunch} 
+  onkeydown={handleKeydown} 
   role="button" 
   tabindex="0"
   class="border transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-opacity-50 {isSelected ? 'ring-2 ring-yellow-400 ring-opacity-75' : ''}"

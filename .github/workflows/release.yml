@@ -77,7 +77,6 @@ jobs:
       with:
         files: |
           bin/Launchy
-          launchy-*.tar.gz
           build/linux/Launchy.desktop
           build/appicon.png
         draft: false
