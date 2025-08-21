@@ -14,6 +14,9 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as domain$0 from "../domain/models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as application$0 from "../../../github.com/wailsapp/wails/v3/pkg/application/models.js";
 
 /**
  * GetApps returns all available applications
@@ -36,7 +39,7 @@ export function GetFavorites() {
 }
 
 /**
- * LaunchApp launches an application by its exec path
+ * LaunchApp launches an application by its exec path and closes Launchy
  * @param {string} execPath
  * @returns {$CancellablePromise<void>}
  */
@@ -53,6 +56,15 @@ export function SearchApps(query) {
     return $Call.ByID(1254750610, query).then(/** @type {($result: any) => any} */(($result) => {
         return $$createType1($result);
     }));
+}
+
+/**
+ * SetApp sets the application reference for window management
+ * @param {application$0.App | null} app
+ * @returns {$CancellablePromise<void>}
+ */
+export function SetApp(app) {
+    return $Call.ByID(495826173, app);
 }
 
 /**

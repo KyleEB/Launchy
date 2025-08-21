@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install Wails CLI
+      run: go install github.com/wailsapp/wails/v3/cmd/wails@latest
+
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Build application
+      run: wails3 build -config ./build/config.yml
+
+    - name: Generate desktop file
+      run: |
+        wails3 generate .desktop \
+          -name "Launchy" \
+          -exec "launchy" \
+          -icon "launchy" \
+          -outputfile build/linux/Launchy.desktop \
+          -categories "Utility;"
+
+    - name: Create source tarball
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        tar --exclude='.git' --exclude='bin' --exclude='node_modules' --exclude='.task' \
+            --exclude='build' --exclude='.github' --exclude='.gitignore' \
+            -czf "launchy-${VERSION#v}.tar.gz" .
+
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          bin/Launchy
+          launchy-*.tar.gz
+          build/linux/Launchy.desktop
+          build/appicon.png
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

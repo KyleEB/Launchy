@@ -7,11 +7,14 @@ import (
 	"changeme/backend/domain"
 	"changeme/backend/infrastructure"
 	"changeme/backend/usecase"
+
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 // AppService provides application management functionality
 type AppService struct {
 	appUseCase *usecase.AppUseCase
+	app        *application.App
 }
 
 // NewAppService creates a new instance of AppService with dependencies
@@ -31,6 +34,11 @@ func NewAppService() *AppService {
 	}
 
 	return appService
+}
+
+// SetApp sets the application reference for window management
+func (s *AppService) SetApp(app *application.App) {
+	s.app = app
 }
 
 // GetApps returns all available applications
@@ -60,9 +68,20 @@ func (s *AppService) SearchApps(query string) ([]domain.AppInfo, error) {
 	return results, nil
 }
 
-// LaunchApp launches an application by its exec path
+// LaunchApp launches an application by its exec path and closes Launchy
 func (s *AppService) LaunchApp(execPath string) error {
-	return s.appUseCase.LaunchApp(execPath)
+	// Launch the application
+	err := s.appUseCase.LaunchApp(execPath)
+	if err != nil {
+		return err
+	}
+
+	// Close Launchy after successfully launching the app
+	if s.app != nil {
+		s.app.Quit()
+	}
+
+	return nil
 }
 
 // ToggleFavorite toggles the favorite status of an application

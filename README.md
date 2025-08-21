@@ -80,10 +80,22 @@ This creates a production-ready executable in the `build` directory.
 
 Launchy can be installed on Arch Linux using the provided PKGBUILD:
 
+#### From Release (Recommended)
+1. **Download the PKGBUILD:**
+   ```bash
+   curl -O https://raw.githubusercontent.com/KyleEB/launchy/main/PKGBUILD
+   ```
+
+2. **Build and install:**
+   ```bash
+   makepkg -si
+   ```
+
+#### From Source
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
-   cd Launchy
+   git clone https://github.com/KyleEB/launchy.git
+   cd launchy
    ```
 
 2. **Install dependencies:**

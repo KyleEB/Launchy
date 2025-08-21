@@ -54,6 +54,9 @@ func main() {
 		},
 	})
 
+	// Set the application reference in the service for window management
+	appService.SetApp(app)
+
 	// Create a new window with the necessary options.
 	// 'Title' is the title of the window.
 	// 'Mac' options tailor the window when running on macOS.
