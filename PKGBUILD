@@ -1,6 +1,6 @@
 # Maintainer: KyleEB
 pkgname=launchy
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="Application Launcher for CachyOS - Wails3 + Svelte"
 arch=('x86_64' 'aarch64')
