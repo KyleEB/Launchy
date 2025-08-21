@@ -13,6 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Create source tarball
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        tar --exclude='.git' --exclude='bin' --exclude='node_modules' --exclude='.task' \
+            --exclude='build' --exclude='.github' --exclude='.gitignore' \
+            -czf "launchy-${VERSION#v}.tar.gz" .
+
     - name: Setup Go
       uses: actions/setup-go@v4
       with:
@@ -59,13 +66,6 @@ jobs:
       run: |
         cd frontend
         npm ci
-
-    - name: Create source tarball
-      run: |
-        VERSION=${GITHUB_REF#refs/tags/}
-        tar --exclude='.git' --exclude='bin' --exclude='node_modules' --exclude='.task' \
-            --exclude='build' --exclude='.github' --exclude='.gitignore' \
-            -czf "launchy-${VERSION#v}.tar.gz" .
 
     - name: Build application
       run: wails3 build
