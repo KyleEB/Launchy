@@ -6,40 +6,59 @@
   import { appStore, filteredApps, isLoading, error } from "./stores/appStore";
   import { onMount } from 'svelte';
 
-  let selectedIndex = 0;
+  let selectedIndex = $state(0);
+  let searchBarComponent = $state<any>(null);
 
   // Search functionality
-  function handleSearch(event: CustomEvent<string>) {
-    appStore.setSearchQuery(event.detail);
+  function handleSearch(query: string) {
+    appStore.setSearchQuery(query);
     selectedIndex = 0; // Reset selection when search changes
   }
 
   // Handle launch event from AppCard component
-  function handleLaunch(event: CustomEvent<string>) {
-    appStore.launchApp(event.detail);
+  function handleLaunch(exec: string) {
+    appStore.launchApp(exec);
   }
 
-
-
-  // Handle keyboard navigation
+  // Handle keyboard navigation and text input
   function handleKeydown(event: KeyboardEvent) {
-    if ($filteredApps.length === 0) return;
+    // Check if the target is already an input element
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      return; // Let input elements handle their own events
+    }
 
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
+    // Handle navigation keys
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if ($filteredApps.length > 0) {
         selectedIndex = Math.min(selectedIndex + 1, $filteredApps.length - 1);
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
+      }
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if ($filteredApps.length > 0) {
         selectedIndex = Math.max(selectedIndex - 1, 0);
-        break;
-      case 'Enter':
-        event.preventDefault();
-        if ($filteredApps[selectedIndex]) {
-          appStore.launchApp($filteredApps[selectedIndex].exec);
-        }
-        break;
+      }
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if ($filteredApps[selectedIndex]) {
+        appStore.launchApp($filteredApps[selectedIndex].exec);
+      }
+      return;
+    }
+
+    // Handle text input - send to search bar
+    if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      event.preventDefault();
+      if (searchBarComponent) {
+        searchBarComponent.focusAndType(event.key);
+      }
     }
   }
 
@@ -49,7 +68,7 @@
   });
 </script>
 
-<main class="min-h-screen bg-[#0d1117] text-[#c9d1d9]" on:keydown={handleKeydown} tabindex="0">
+<div class="min-h-screen bg-[#0d1117] text-[#c9d1d9]" onkeydown={handleKeydown} contenteditable="true" role="application">
     <header class="bg-[#161b22] border-b border-[#30363d] px-4 py-2 shadow-sm">
     <div class="max-w-6xl mx-auto flex items-center justify-center space-x-6">
       <div class="flex items-center space-x-2">
@@ -57,7 +76,17 @@
         <h1 class="text-lg font-bold">Launchy</h1>
       </div>
       <div class="w-100">
-        <SearchBar on:search={handleSearch} />
+        <SearchBar bind:this={searchBarComponent} onSearch={handleSearch} onEnter={() => {
+          if ($filteredApps[selectedIndex]) {
+            appStore.launchApp($filteredApps[selectedIndex].exec);
+          }
+        }} onArrow={(direction) => {
+          if (direction === 'ArrowDown') {
+            selectedIndex = Math.min(selectedIndex + 1, $filteredApps.length - 1);
+          } else if (direction === 'ArrowUp') {
+            selectedIndex = Math.max(selectedIndex - 1, 0);
+          }
+        }} />
       </div>
       <div class="flex items-center space-x-2 text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-md border border-gray-600">
         <span>↑↓ Navigate</span>
@@ -74,11 +103,11 @@
       <AppGrid 
         apps={$filteredApps}
         {selectedIndex}
-        on:launch={handleLaunch}
+        onLaunch={handleLaunch}
       />
     {/if}
   {/if}
     </div>
-</main>
+</div>
 
 

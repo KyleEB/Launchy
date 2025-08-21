@@ -1,16 +1,14 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import type { AppInfo } from '../types/app';
   
-  export let app: AppInfo;
-  export let isSelected = false;
-  
-  const dispatch = createEventDispatcher<{
-    launch: string;
+  const { app, isSelected, onLaunch } = $props<{
+    app: AppInfo;
+    isSelected: boolean;
+    onLaunch: (exec: string) => void;
   }>();
   
   function handleLaunch() {
-    dispatch('launch', app.exec);
+    onLaunch(app.exec);
   }
 
   function handleKeydown(event: KeyboardEvent) {

@@ -1,18 +1,16 @@
 <script lang="ts">
   import AppCard from "./AppCard.svelte";
   import type { AppInfo } from '../types/app';
-  import { createEventDispatcher } from 'svelte';
 
-  export let apps: AppInfo[] = [];
-  export let selectedIndex = 0;
-
-  const dispatch = createEventDispatcher<{
-    launch: string;
+  const { apps, selectedIndex, onLaunch } = $props<{
+    apps: AppInfo[];
+    selectedIndex: number;
+    onLaunch: (exec: string) => void;
   }>();
 
   // Handle launch event from AppCard component
-  function handleLaunch(event: CustomEvent<string>) {
-    dispatch('launch', event.detail);
+  function handleLaunch(exec: string) {
+    onLaunch(exec);
   }
 
 

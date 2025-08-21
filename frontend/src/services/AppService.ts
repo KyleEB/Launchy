@@ -61,7 +61,7 @@ export class AppService implements AppServiceInterface {
       this._isLoading = false;
     } catch (err) {
       console.error("Failed to load apps:", err);
-      const errorMsg = `Failed to load applications: ${err.message}`;
+      const errorMsg = `Failed to load applications: ${err instanceof Error ? err.message : String(err)}`;
       this.error = errorMsg;
       this.loadingState = "error";
       this._isLoading = false;
@@ -85,7 +85,6 @@ export class AppService implements AppServiceInterface {
   toggleFavorite(appName: string): void {
     // TODO: Implement favorite functionality
     // This could involve updating local storage, making API calls, etc.
-    console.log("Toggle favorite for:", appName);
   }
 
   async launchApp(execPath: string): Promise<void> {

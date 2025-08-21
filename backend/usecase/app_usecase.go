@@ -27,12 +27,10 @@ func NewAppUseCase(appRepo repository.AppRepository, appLauncher repository.AppL
 func (uc *AppUseCase) GetAllApps() ([]domain.AppInfo, error) {
 	// Trigger app discovery on first call only
 	if !uc.discovered {
-		fmt.Println("GetAllApps called - triggering app discovery...")
 		if err := uc.appRepo.DiscoverApps(); err != nil {
 			return nil, fmt.Errorf("failed to discover apps: %w", err)
 		}
 		uc.discovered = true
-		fmt.Println("App discovery completed")
 	}
 
 	apps, err := uc.appRepo.GetAllApps()
@@ -46,7 +44,6 @@ func (uc *AppUseCase) GetAllApps() ([]domain.AppInfo, error) {
 		appInfos[i] = app.ToAppInfo()
 	}
 
-	fmt.Printf("GetAllApps returning %d applications\n", len(appInfos))
 	return appInfos, nil
 }
 

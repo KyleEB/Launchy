@@ -32,20 +32,6 @@ func NewFileAppRepository(configPath string) *FileAppRepository {
 
 // GetAllApps returns all discovered applications
 func (r *FileAppRepository) GetAllApps() ([]*domain.App, error) {
-	fmt.Printf("GetAllApps called - returning %d discovered applications\n", len(r.apps))
-
-	if len(r.apps) == 0 {
-		fmt.Println("WARNING: No applications found! This might indicate an issue with app discovery.")
-		fmt.Println("Checking if app discovery completed properly...")
-	}
-
-	// Log first few apps for debugging
-	for i, app := range r.apps {
-		if i < 5 { // Only log first 5 apps to avoid spam
-			fmt.Printf("App %d: %s (%s)\n", i+1, app.Name, app.Exec)
-		}
-	}
-
 	return r.apps, nil
 }
 
@@ -94,8 +80,6 @@ func (r *FileAppRepository) LoadFavorites() (map[string]bool, error) {
 
 // DiscoverApps scans the system for desktop applications and command line executables
 func (r *FileAppRepository) DiscoverApps() error {
-	fmt.Println("Starting app discovery...")
-
 	// Discover desktop applications
 	desktopDirs := []string{
 		"/usr/share/applications",
@@ -106,12 +90,10 @@ func (r *FileAppRepository) DiscoverApps() error {
 	parser := NewDesktopFileParser()
 
 	for _, dir := range desktopDirs {
-		fmt.Printf("Scanning desktop directory: %s\n", dir)
 		r.scanDesktopDirectory(dir, parser)
 	}
 
 	// Discover command line executables from PATH
-	fmt.Println("Scanning PATH for executables...")
 	r.scanPathExecutables()
 
 	// Sort apps by name
@@ -119,7 +101,6 @@ func (r *FileAppRepository) DiscoverApps() error {
 		return r.apps[i].Name < r.apps[j].Name
 	})
 
-	fmt.Printf("App discovery completed. Found %d applications\n", len(r.apps))
 	return nil
 }
 
@@ -140,62 +121,39 @@ func (r *FileAppRepository) loadFavorites() {
 func (r *FileAppRepository) scanDesktopDirectory(dir string, parser DesktopFileParser) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		fmt.Printf("Error reading directory %s: %v\n", dir, err)
 		return
 	}
 
-	fileCount := 0
-	appCount := 0
-	
-	fmt.Printf("Scanning %s for .desktop files...\n", dir)
-	
 	for _, entry := range entries {
 		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".desktop") {
-			fileCount++
 			filePath := filepath.Join(dir, entry.Name())
 			if app, err := parser.ParseDesktopFile(filePath); err == nil && app.Name != "" {
 				app.SetFavorite(r.favorites[app.Name])
 				r.apps = append(r.apps, app)
-				appCount++
-				if appCount <= 3 { // Log first 3 successful parses
-					fmt.Printf("  ✓ Parsed: %s -> %s\n", entry.Name(), app.Name)
-				}
-			} else {
-				if fileCount <= 5 { // Log first 5 failed parses
-					fmt.Printf("  ✗ Failed to parse: %s (%v)\n", entry.Name(), err)
-				}
 			}
 		}
 	}
-	
-	fmt.Printf("Scanned %s: found %d .desktop files, parsed %d applications\n", dir, fileCount, appCount)
 }
 
 // scanPathExecutables scans the PATH environment variable for executable files
 func (r *FileAppRepository) scanPathExecutables() {
 	path := os.Getenv("PATH")
 	paths := strings.Split(path, ":")
-	execCount := 0
-
-	fmt.Printf("Scanning PATH for executables...\n")
-	fmt.Printf("PATH directories: %v\n", paths)
 
 	for _, dir := range paths {
 		if dir == "" {
 			continue
 		}
-		
+
 		entries, err := os.ReadDir(dir)
 		if err != nil {
-			fmt.Printf("Error reading PATH directory %s: %v\n", dir, err)
 			continue
 		}
 
-		dirExecCount := 0
 		for _, entry := range entries {
 			if !entry.IsDir() {
 				filePath := filepath.Join(dir, entry.Name())
-				
+
 				// Check if file is executable
 				if info, err := os.Stat(filePath); err == nil {
 					if info.Mode()&0111 != 0 { // Check if executable
@@ -209,21 +167,10 @@ func (r *FileAppRepository) scanPathExecutables() {
 						if err == nil {
 							app.SetFavorite(r.favorites[entry.Name()])
 							r.apps = append(r.apps, app)
-							execCount++
-							dirExecCount++
-							if execCount <= 5 { // Log first 5 executables
-								fmt.Printf("  ✓ Found executable: %s (%s)\n", entry.Name(), dir)
-							}
 						}
 					}
 				}
 			}
 		}
-		
-		if dirExecCount > 0 {
-			fmt.Printf("  Directory %s: found %d executables\n", dir, dirExecCount)
-		}
 	}
-	
-	fmt.Printf("Found %d command line executables total\n", execCount)
 }
