@@ -74,6 +74,67 @@ wails3 build
 
 This creates a production-ready executable in the `build` directory.
 
+## Installation
+
+### Arch Linux
+
+Launchy can be installed on Arch Linux using the provided PKGBUILD:
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd Launchy
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   sudo pacman -S go nodejs npm git
+   go install github.com/wailsapp/wails/v3/cmd/wails@latest
+   ```
+
+3. **Build and install:**
+   ```bash
+   makepkg -si
+   ```
+
+4. **Run Launchy:**
+   ```bash
+   launchy
+   ```
+
+   The application will also be available in your desktop environment's application menu.
+
+### Other Linux Distributions
+
+For other distributions, build from source:
+
+1. **Install dependencies:**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt install golang-go nodejs npm
+   
+   # Fedora
+   sudo dnf install golang nodejs npm
+   
+   # Arch Linux (if not using PKGBUILD)
+   sudo pacman -S go nodejs npm
+   ```
+
+2. **Install Wails3 CLI:**
+   ```bash
+   go install github.com/wailsapp/wails/v3/cmd/wails@latest
+   ```
+
+3. **Build the application:**
+   ```bash
+   wails3 build
+   ```
+
+4. **Run the binary:**
+   ```bash
+   ./bin/Launchy
+   ```
+
 ## Usage
 
 1. **Search Applications**: Type in the search bar to find applications by name, description, or category

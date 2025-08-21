@@ -17,11 +17,11 @@ license: "MIT"
 release: "1"
 
 contents:
-  - src: "./bin/launchy"
+  - src: "./bin/Launchy"
     dst: "/usr/local/bin/launchy"
   - src: "./build/appicon.png"
     dst: "/usr/share/icons/hicolor/128x128/apps/launchy.png"
-  - src: "./build/linux/launchy.desktop"
+  - src: "./build/linux/Launchy.desktop"
     dst: "/usr/share/applications/launchy.desktop"
 
 # Default dependencies for Debian 12/Ubuntu 22.04+ with WebKit 4.1
