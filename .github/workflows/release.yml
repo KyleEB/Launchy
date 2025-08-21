@@ -61,7 +61,7 @@ jobs:
         npm ci
 
     - name: Build application
-      run: wails3 build -config ./build/config.yml
+      run: wails3 build
 
     - name: Generate desktop file
       run: |
