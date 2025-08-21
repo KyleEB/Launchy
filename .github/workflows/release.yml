@@ -60,6 +60,13 @@ jobs:
         cd frontend
         npm ci
 
+    - name: Create source tarball
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        tar --exclude='.git' --exclude='bin' --exclude='node_modules' --exclude='.task' \
+            --exclude='build' --exclude='.github' --exclude='.gitignore' \
+            -czf "launchy-${VERSION#v}.tar.gz" .
+
     - name: Build application
       run: wails3 build
 
@@ -71,13 +78,6 @@ jobs:
           -icon "launchy" \
           -outputfile build/linux/Launchy.desktop \
           -categories "Utility;"
-
-    - name: Create source tarball
-      run: |
-        VERSION=${GITHUB_REF#refs/tags/}
-        tar --exclude='.git' --exclude='bin' --exclude='node_modules' --exclude='.task' \
-            --exclude='build' --exclude='.github' --exclude='.gitignore' \
-            -czf "launchy-${VERSION#v}.tar.gz" .
 
     - name: Create release
       uses: softprops/action-gh-release@v1
