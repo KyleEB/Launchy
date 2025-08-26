@@ -2,6 +2,8 @@
 
 A modern, fast application launcher built with Wails3 and Svelte for CachyOS and other Linux distributions.
 
+![Launchy Screenshot](launchy.png)
+
 ## Features
 
 - **🔍 Smart Search**: Search applications by name, description, or categories
