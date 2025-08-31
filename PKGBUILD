@@ -1,5 +1,5 @@
 # Maintainer: KyleEB
-pkgname=launchy
+pkgname=strightertech-launchy
 pkgver=0.1.1
 pkgrel=1
 pkgdesc="Application Launcher for CachyOS - Wails3 + Svelte"
